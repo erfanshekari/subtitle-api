@@ -35,3 +35,12 @@ this method extract all zip files.
 subscene.download().extract()
 
 ```
+# some useful properties:
+```
+subscene.subtitles # all subtitle objects in memory
+
+subscene.zip_files # downloaded zip files!
+
+subscene.all_subtitle_files # all extracted subtitle files
+
+```
