@@ -5,3 +5,11 @@ SubtitleAPI is a python package that provide direct access to subtitle content u
 ```
 pip install SubtitleAPI
 ```
+Get Movie Subtitles:
+```
+from subtitleAPI import SubtitleAPI
+
+subscene = SubtitleAPI('english','farsi/persian') # pass languages you want to have in results
+subtitle.movie(title='Tenet',year=2020,release_type='bluray')
+subtitle.download()
+```
