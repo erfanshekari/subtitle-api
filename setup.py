@@ -20,7 +20,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
+    package_dir={"": "."},
     python_requires=">=3.7",
     packages=["subtitle_api"],
     include_package_data=True,

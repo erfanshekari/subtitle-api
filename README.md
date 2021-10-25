@@ -3,11 +3,11 @@
 SubtitleAPI is a python package provide direct access to subscene.com content using scraping techniques! You can search for any subtitle you want to download , also add query filters to remove unwanted content!
 ## Intsall SubtitleAPI using pip
 ```
-pip install SubtitleAPI
+pip install subtitle-api
 ```
 Get Movie Subtitles:
 ```
-from subtitleAPI import SubtitleAPI
+from subtitle_api import SubtitleAPI
 
 subscene = SubtitleAPI('english','farsi/persian') # pass languages you want to have in results
 

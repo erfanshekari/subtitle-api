@@ -1,2 +1,5 @@
 *env
 *__pycache__
+/build
+/dist
+subtitle_api.egg-info
