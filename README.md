@@ -1,6 +1,6 @@
 # Browse and Download from subscene.com with just a few lines of python
 
-SubtitleAPI is a python package that provide direct access to subtitle content using scraping techniques! You can search for any subtitle you want , also add query filters to remove unwanted content!
+SubtitleAPI is a python package provide direct access to subscene.com content using scraping techniques! You can search for any subtitle you want to download , also add query filters to remove unwanted content!
 ## Intsall SubtitleAPI using pip
 ```
 pip install SubtitleAPI
