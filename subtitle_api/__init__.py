@@ -5,16 +5,19 @@ import asyncio
 import requests
 from bs4 import BeautifulSoup
 from imdb import IMDb
-
-# This Module is a web Crawler that makes requests to subscene.com and parse it for best results
-
+from .driver import SubtitleApiWebDriver
 
 class SubtitleAPI:
-    def __init__(self, *args):  # args are languages pass it like ('english', 'persian')
-        self.request_header = {
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-        }
-        self.url = 'https://www.subscene.com'
+
+    URL = 'https://www.subscene.com'
+
+    def __init__(self, *args, **kwargs) -> None:  # args are languages pass it like ('english', 'arabic', 'farsi/persian')
+
+        self.driver = kwargs.get('driver', None)
+
+        if self.driver:
+            self.subtitle_web_driver = SubtitleApiWebDriver(driver = driver, base_url = self.URL)  
+
         self.search_page_slugs = '/subtitles/searchbytitle'  # subscene search slug
         self.temp_dir = os.path.abspath(os.path.join(os.path.curdir, 'temp'))
         self.excuter_loop = asyncio.get_event_loop()
@@ -40,14 +43,26 @@ class SubtitleAPI:
         return BeautifulSoup(html, 'html.parser')
 
     # this method simply call and endpoint and return it as plantext
-    def get_html(self, url):
-        response = requests.get(url).text
+    def get_html(self, url, timeout = 20) -> str:
+        # try:
+        #     if self.driver is not None:
+        #         return self.subtitle_web_driver.get_html(url, timeout)
+        # except Exception as exc:
+        #     self.subtitle_web_driver.close()
+        #     raise exc
+        response = requests.get(url, timeout=timeout).text
         return response
 
     # this method can make a search query to subscene and a list of dict results contain name and link
-    def search(self, title):
-        response = requests.post(f'{self.url}{self.search_page_slugs}', data={
-                                 'query': title}, headers=self.request_header).text
+    def search(self, title, timeout = 20) -> BeautifulSoup:
+        # try:
+        #     if self.driver is not None:
+        #         return self.parse(self.subtitle_web_driver.search_by_title(title=title, timeout= timeout))
+        # except Exception as exc:
+        #     self.subtitle_web_driver.close()
+        #     raise exc
+        response = requests.post(f'{self.URL}{self.search_page_slugs}', data={
+                                 'query': title}).text
         return self.remove_duplicate_dicts(self.parse_search_results(self.parse(response)))
 
     # this method parse html to extract only results and return as list
@@ -103,11 +118,12 @@ class SubtitleAPI:
             link = obj.get('link', None)
             if link:
                 try:
-                    get_Obj = await self.scrape_download_page(f'{self.url}{link}')
-                    if get_Obj:
-                        self.memory_state[index].update(get_Obj)
+                    get_obj = await self.scrape_download_page(f'{self.URL}{link}')
+                    print(get_obj)
+                    if get_obj:
+                        self.memory_state[index].update(get_obj)
                 except:
-                    print('probelm while connecting')
+                    print('problem while connecting')
                     pass
 
     # download zip files in queue
@@ -118,7 +134,7 @@ class SubtitleAPI:
                 download = obj.get('download', None)
                 if download:
                     try:
-                        zip_local_path = {'zip': await self.download_zip(f'{self.url}{download}', obj['name'])}
+                        zip_local_path = {'zip': await self.download_zip(f'{self.URL}{download}', obj['name'])}
                         self.memory_state[index].update(zip_local_path)
                     except:
                         pass
@@ -192,6 +208,7 @@ class SubtitleAPI:
     # scrape_download_page(url) method scrape subtitle author, download link and release information
     async def scrape_download_page(self, url):
         soup = self.parse(self.get_html(url))
+        print(soup)
         release_info_list = []
         author, download = None, None
         for element in soup.find_all('li', class_='release'):
@@ -269,6 +286,7 @@ class SubtitleAPI:
             title, year = self.imdb_find(imdb_id)
 
         search_results = self.search(title)
+        print(search_results)
         if len(search_results) > 1:
             filtered_results = []
             for obj in search_results:
@@ -282,7 +300,7 @@ class SubtitleAPI:
 
         if search_results:
             link = search_results[0]['link']
-            url = f'{self.url}{link}'
+            url = f'{self.URL}{link}'
             sub_list = self.scrape_list(url)
             if release_type:
                 sub_list = self.filter_release_type(sub_list, release_type)
@@ -301,7 +319,7 @@ class SubtitleAPI:
             search_results = self.find_season(search_results, title, season)
         if search_results:
             link = search_results[0]['link']
-            url = f'{self.url}{link}'
+            url = f'{self.URL}{link}'
             sub_list = self.scrape_list(url)
             if release_type:
                 sub_list = self.filter_release_type(sub_list, release_type)
