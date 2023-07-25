@@ -1,3 +1,7 @@
+
+*** Subscene.com is now protected by bot protection. So this module no longer works.
+
+
 # Browse and Download from subscene.com with just a few lines of python
 
 subtitle-api is a python package provide direct access to subscene.com content using scraping techniques! You can search for any subtitle you want to download , also add query filters to remove unwanted content!
